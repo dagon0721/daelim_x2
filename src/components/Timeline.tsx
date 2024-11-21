@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { IPost } from "../types/PostInput";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 import Post from "./Post";
+import { Unsubscribe } from "firebase/auth";
 
 const Container = styled.div``;
 
@@ -42,7 +43,33 @@ export default () => {
   // Timeline 컴포넌트 실행하는 순간,
   useEffect(() => {
     // 게시글 불러오기
-    getPosts();
+    // getPosts();
+    // realtime으로 게시글을 불러오기
+    const getPostsRealtime = async () => {
+      // 1. listener 등록을 위한 구독장치 생성
+      let Unsubscribe: Unsubscribe | null = null;
+      // 2. Firebase DB에서 게시글 가져올 쿼리 생성
+      const path = collection(firestore, "posts");
+      const condition = orderBy("createdAt", "desc");
+      const postsQuery = query(path, condition);
+      // 4. 받아온 게시글을 구독장치에 등록하여 실시간 체크
+      Unsubscribe = await onSnapshot(postsQuery, (snapshot) => {
+        // 3. 쿼리를 통해 게시글 받아오기 => 가공
+        const timelinePosts = snapshot.docs.map((doc) => {
+          const { createdAt, email, nickname, post, userId } = doc.data() as IPost;
+          return {
+            createdAt,
+            email,
+            nickname,
+            post,
+            userId,
+          };
+        });
+        setPosts(timelinePosts);
+      });
+      // 5. Timeline 페이지에서 나가면 , 구독해제(=실시간체크 해제)
+    };
+    getPostsRealtime();
   }, []);
 
   // Page Design Rendering

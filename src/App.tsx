@@ -12,6 +12,7 @@ import LoadingScreen from "./screens/loading-screen";
 import ProtectedRouter from "./components/protected-router";
 import Layout from "./screens/layout";
 import ErrorRouterScreen from "./screens/error-router-screen";
+import "moment/locale/ko";
 
 // react-router-dom을 활용한 Page 관리
 // - Page : home, profile, signin, signup

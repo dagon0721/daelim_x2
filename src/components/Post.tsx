@@ -2,6 +2,8 @@
 import styled from "styled-components";
 import { IPost } from "../types/PostInput";
 import { auth } from "../firebaseConfig";
+import moment from "moment";
+import PostMenu from "./Post-Menu";
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +34,13 @@ const CreateTime = styled.div`
   font-size: 12px;
   color: #4d4d4d;
 `;
+
+const Footer = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
 export default ({ userId, nickname, post, createdAt, email }: IPost) => {
   return (
     <Container>
@@ -44,7 +53,12 @@ export default ({ userId, nickname, post, createdAt, email }: IPost) => {
         <UserName>{nickname}</UserName>
         <UserEmail>{email}</UserEmail>
         <Content>{post}</Content>
-        <CreateTime>{createdAt}</CreateTime>
+        <CreateTime>{moment(createdAt).fromNow()}</CreateTime>
+        <Footer>
+          <PostMenu menu="view" count={99} />
+          <PostMenu menu="likes" count={23} />
+          <PostMenu menu="comments" count={50} />
+        </Footer>
       </DataBox>
     </Container>
   );
