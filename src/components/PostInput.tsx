@@ -122,6 +122,7 @@ export default () => {
         createdAt: Date.now(),
         nickname: user.displayName || "익명",
         userId: user.uid,
+        email: user.email || "",
       };
       // 3. Firebase에 전달
       await addDoc(collection(firestore, "posts"), myPost);

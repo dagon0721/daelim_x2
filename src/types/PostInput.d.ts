@@ -3,4 +3,5 @@ export type IPost = {
   createdAt: number;
   nickname: string;
   userId: string;
+  email: string;
 };

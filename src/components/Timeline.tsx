@@ -25,13 +25,14 @@ export default () => {
     // 4. 어떤 형태로 보여줄 지? => 재구성
     const timelinePosts = result.docs.map((doc) => {
       // 닉네임,작성시간,게시글내용,유저ID,프로필이미지
-      const { userId, nickname, post, createdAt } = doc.data() as IPost;
+      const { userId, nickname, post, createdAt, email } = doc.data() as IPost;
       // 내가 쓸 수 있도록 형태를 수정
       return {
         userId: userId,
         nickname: nickname,
         post: post,
         createdAt: createdAt,
+        email: email,
       };
     });
     // 4. 불러와서 재가공한 데이터를 State에 저장
@@ -49,7 +50,7 @@ export default () => {
     <Container>
       {posts.map((post) => {
         // posts에서 가져온 post를 보여주기
-        return <Post />;
+        return <Post email={post.email} nickname={post.nickname} createdAt={post.createdAt} userId={post.userId} post={post.post} />;
       })}
     </Container>
   );
