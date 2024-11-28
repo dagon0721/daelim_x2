@@ -4,4 +4,5 @@ export type IPost = {
   nickname: string;
   userId: string;
   email: string;
+  id?: string;
 };

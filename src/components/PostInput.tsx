@@ -27,7 +27,8 @@ const TextArea = styled.textarea`
   width: 100%;
   font-size: 20px;
   font-weight: bold;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   &:focus {
     outline: none;
     border-color: #3972f5;
@@ -144,11 +145,28 @@ export default () => {
       <Profile></Profile>
       {/* 게시글 작성 영역 */}
       <PostArea>
-        <TextArea ref={textareaRef} rows={5} value={post} onChange={(e) => onChange(e)} maxLength={200} placeholder="무슨 일이 일어나고 있나요?" />
+        <TextArea
+          ref={textareaRef}
+          rows={5}
+          value={post}
+          onChange={(e) => onChange(e)}
+          maxLength={200}
+          placeholder="무슨 일이 일어나고 있나요?"
+        />
         <BottomMenu>
-          <AttachFileButton htmlFor="file">{file ? "업로드 완료" : "사진 업로드"}</AttachFileButton>
-          <AttachFileInput onChange={(e) => onChangeFile(e)} type="file" id="file" accept="image/*" />
-          <SubmitButton type={"submit"} value={loading ? "업로드 중..." : "작성하기"} />
+          <AttachFileButton htmlFor="file">
+            {file ? "업로드 완료" : "사진 업로드"}
+          </AttachFileButton>
+          <AttachFileInput
+            onChange={(e) => onChangeFile(e)}
+            type="file"
+            id="file"
+            accept="image/*"
+          />
+          <SubmitButton
+            type={"submit"}
+            value={loading ? "업로드 중..." : "작성하기"}
+          />
         </BottomMenu>
       </PostArea>
     </Form>

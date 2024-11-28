@@ -3,10 +3,17 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { IPost } from "../types/PostInput";
-import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 import Post from "./Post";
 import { Unsubscribe } from "firebase/auth";
+import { unsubscribe } from "diagnostics_channel";
 
 const Container = styled.div``;
 
@@ -29,11 +36,12 @@ export default () => {
       const { userId, nickname, post, createdAt, email } = doc.data() as IPost;
       // 내가 쓸 수 있도록 형태를 수정
       return {
-        userId: userId,
-        nickname: nickname,
-        post: post,
         createdAt: createdAt,
         email: email,
+        nickname: nickname,
+        post: post,
+        userId: userId,
+        id: doc.id,
       };
     });
     // 4. 불러와서 재가공한 데이터를 State에 저장
@@ -44,32 +52,42 @@ export default () => {
   useEffect(() => {
     // 게시글 불러오기
     // getPosts();
-    // realtime으로 게시글을 불러오기
+
+    // 1. listener 등록을 위한 구독장치 생성
+    let unSubscribe: Unsubscribe | null = null;
+
+    // (선언)realtime으로 게시글을 불러오기
     const getPostsRealtime = async () => {
-      // 1. listener 등록을 위한 구독장치 생성
-      let Unsubscribe: Unsubscribe | null = null;
       // 2. Firebase DB에서 게시글 가져올 쿼리 생성
       const path = collection(firestore, "posts");
       const condition = orderBy("createdAt", "desc");
       const postsQuery = query(path, condition);
       // 4. 받아온 게시글을 구독장치에 등록하여 실시간 체크
-      Unsubscribe = await onSnapshot(postsQuery, (snapshot) => {
+      unSubscribe = await onSnapshot(postsQuery, (snapshot) => {
         // 3. 쿼리를 통해 게시글 받아오기 => 가공
         const timelinePosts = snapshot.docs.map((doc) => {
-          const { createdAt, email, nickname, post, userId } = doc.data() as IPost;
+          const { createdAt, email, nickname, post, userId } =
+            doc.data() as IPost;
           return {
             createdAt,
             email,
             nickname,
             post,
             userId,
+            id: doc.id,
           };
         });
         setPosts(timelinePosts);
       });
-      // 5. Timeline 페이지에서 나가면 , 구독해제(=실시간체크 해제)
     };
-    getPostsRealtime();
+
+    getPostsRealtime(); //(사용)
+    // 5. Timeline 페이지에서 나가면
+    return () => {
+      // 구독해제(=실시간체크 해제)
+      unSubscribe && unSubscribe();
+      // alert("페이지 나감");
+    };
   }, []);
 
   // Page Design Rendering
@@ -77,7 +95,16 @@ export default () => {
     <Container>
       {posts.map((post) => {
         // posts에서 가져온 post를 보여주기
-        return <Post email={post.email} nickname={post.nickname} createdAt={post.createdAt} userId={post.userId} post={post.post} />;
+        return (
+          <Post
+            id={post.id}
+            email={post.email}
+            nickname={post.nickname}
+            createdAt={post.createdAt}
+            userId={post.userId}
+            post={post.post}
+          />
+        );
       })}
     </Container>
   );
